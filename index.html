@@ -8,16 +8,19 @@
     body {
       margin: 0;
       height: 100vh;
-      background: linear-gradient(160deg, #0f172a, #1e293b);
+      background: radial-gradient(circle at bottom, #0f172a 0%, #020617 100%);
       display: flex;
       justify-content: center;
       align-items: center;
       color: #f1f5f9;
       font-family: "Poppins", sans-serif;
+      overflow: hidden;
+      position: relative;
     }
 
     .container {
       text-align: center;
+      z-index: 10;
     }
 
     h1 {
@@ -53,9 +56,21 @@
       background-color: #f43f5e;
       color: #fff;
     }
+
+    /* Havai fişek için canvas */
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
   </style>
 </head>
 <body>
+  <canvas id="fireworks"></canvas>
   <div class="container">
     <h1>Beni affet?</h1>
     <div class="buttons">
@@ -68,25 +83,87 @@
     const evetBtn = document.getElementById("evet");
     const hayirBtn = document.getElementById("hayir");
     const buttons = document.querySelector(".buttons");
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
 
-    let scale = 1; // evet butonunun büyüklüğü
-    const INCREMENT = 0.2; // her tıklamada ne kadar büyüsün
-    const MAX_SCALE = 5; // en fazla ne kadar büyüsün
+    // Buton etkileşimi
+    let scale = 1;
+    const INCREMENT = 0.2;
+    const MAX_SCALE = 5;
 
     hayirBtn.addEventListener("click", () => {
       if (scale < MAX_SCALE) {
         scale += INCREMENT;
         evetBtn.style.transform = `scale(${scale})`;
-
-        // Evet büyüdükçe hayır butonunu sağa kaydır
-        const moveDistance = (scale - 1) * 40; // büyüklüğe göre uzaklık
+        const moveDistance = (scale - 1) * 40;
         buttons.style.gap = `${20 + moveDistance}px`;
       }
     });
 
     evetBtn.addEventListener("click", () => {
-      alert("Seni seviyorum 💚");
+      startFireworks();
+      setTimeout(() => alert("Seni çok seviyorum 💚"), 2000);
     });
+
+    // Havai fişek animasyonu
+    let particles = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function createFirework(x, y) {
+      const count = 50;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count;
+        const speed = Math.random() * 5 + 2;
+        particles.push({
+          x,
+          y,
+          radius: Math.random() * 3 + 1,
+          color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1,
+          decay: Math.random() * 0.015 + 0.005,
+        });
+      }
+    }
+
+    function updateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05; // yerçekimi etkisi
+        p.alpha -= p.decay;
+        if (p.alpha <= 0) particles.splice(i, 1);
+        else {
+          ctx.globalAlpha = p.alpha;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(updateFireworks);
+    }
+
+    function startFireworks() {
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * (canvas.height / 2);
+          createFirework(x, y);
+        }, i * 400);
+      }
+    }
+
+    updateFireworks();
   </script>
 </body>
 </html>
