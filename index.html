@@ -57,7 +57,6 @@
       color: #fff;
     }
 
-    /* Havai fişek için canvas */
     canvas {
       position: absolute;
       top: 0;
@@ -79,14 +78,17 @@
     </div>
   </div>
 
+  <!-- Müzik dosyası -->
+  <audio id="music" src="music.mp3"></audio>
+
   <script>
     const evetBtn = document.getElementById("evet");
     const hayirBtn = document.getElementById("hayir");
     const buttons = document.querySelector(".buttons");
     const canvas = document.getElementById("fireworks");
     const ctx = canvas.getContext("2d");
+    const music = document.getElementById("music");
 
-    // Buton etkileşimi
     let scale = 1;
     const INCREMENT = 0.2;
     const MAX_SCALE = 5;
@@ -102,6 +104,7 @@
 
     evetBtn.addEventListener("click", () => {
       startFireworks();
+      music.play();
       setTimeout(() => alert("Seni çok seviyorum 💚"), 2000);
     });
 
@@ -138,7 +141,7 @@
         const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.05; // yerçekimi etkisi
+        p.vy += 0.05;
         p.alpha -= p.decay;
         if (p.alpha <= 0) particles.splice(i, 1);
         else {
