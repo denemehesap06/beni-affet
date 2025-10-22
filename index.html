@@ -73,7 +73,7 @@
 <body>
   <canvas id="fireworks"></canvas>
   <div class="container">
-    <h1>ASYA BENİ AFFEETTTT</h1>
+    <h1>ASYAAA AFFFFETT BENİ</h1>
     <div class="buttons">
       <button id="evet">EVET</button>
       <button id="hayir">hayır</button>
@@ -84,135 +84,143 @@
   <audio id="music" src="music.mp3"></audio>
 
   <script>
-const evetBtn = document.getElementById("evet");
-const hayirBtn = document.getElementById("hayir");
-const buttons = document.querySelector(".buttons");
-const canvas = document.getElementById("fireworks");
-const ctx = canvas.getContext("2d");
-const music = document.getElementById("music");
+    const evetBtn = document.getElementById("evet");
+    const hayirBtn = document.getElementById("hayir");
+    const buttons = document.querySelector(".buttons");
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    const music = document.getElementById("music");
 
-let scale = 1;
-const INCREMENT = 0.2;
-let particles = [];
+    let scale = 1;
+    const INCREMENT = 0.2;
+    let particles = [];
+    let hayirCount = 0; // Hayır sayacı
 
-// Canvas boyut ayarı
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
+    // Canvas boyut ayarı
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
-// Havai fişek ve uçan kalpler
-function createFirework(x, y) {
-  const count = 50;
-  for (let i = 0; i < count; i++) {
-    const angle = (Math.PI * 2 * i) / count;
-    const speed = Math.random() * 5 + 2;
-    particles.push({
-      x, y,
-      radius: Math.random() * 3 + 1,
-      color: `hsl(${Math.random() * 360}, 100%, 60%)`,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      alpha: 1,
-      decay: Math.random() * 0.015 + 0.005,
-      heart: false
-    });
-  }
-}
-
-function createHeart(x, y) {
-  particles.push({
-    x, y,
-    radius: Math.random() * 12 + 8,
-    color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-    vx: (Math.random() - 0.5) * 2,
-    vy: -Math.random() * 2 - 1,
-    alpha: 1,
-    decay: Math.random() * 0.004 + 0.002,
-    rotation: Math.random() * 2 * Math.PI,
-    rotationSpeed: (Math.random() - 0.5) * 0.05,
-    heart: true
-  });
-}
-
-// Particle güncelleme (kalpler yukarı uçuyor, dönüyor ve kayboluyor)
-function updateParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    if (!p.heart) p.vy += 0.05; // yerçekimi sadece havai fişek
-    if (p.heart) p.rotation += p.rotationSpeed;
-    p.alpha -= p.decay;
-    if (p.alpha <= 0) particles.splice(i, 1);
-    else {
-      ctx.globalAlpha = p.alpha;
-      ctx.fillStyle = p.color;
-      ctx.beginPath();
-      if (p.heart) {
-        // basit dönen kalp
-        const size = p.radius;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rotation);
-        ctx.moveTo(0, 0);
-        ctx.arc(-size/2, 0, size/2, Math.PI, 0, false);
-        ctx.arc(size/2, 0, size/2, Math.PI, 0, false);
-        ctx.lineTo(0, size);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-      } else {
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
-        ctx.fill();
+    // Havai fişek oluşturma
+    function createFirework(x, y) {
+      const count = 50;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count;
+        const speed = Math.random() * 5 + 2;
+        particles.push({
+          x, y,
+          radius: Math.random() * 3 + 1,
+          color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1,
+          decay: Math.random() * 0.015 + 0.005,
+          heart: false
+        });
       }
     }
-  }
-  ctx.globalAlpha = 1;
-  requestAnimationFrame(updateParticles);
-}
-updateParticles();
 
-// Havai fişek başlat
-function startFireworks() {
-  for (let i = 0; i < 5; i++) {
-    setTimeout(() => {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * (canvas.height / 2);
-      createFirework(x, y);
-    }, i * 400);
-  }
-}
+    // Kalp oluşturma (sarı/lacivert)
+    function createHeart(x, y) {
+      const colors = ['#FFD700', '#1E3A8A'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      particles.push({
+        x, y,
+        radius: Math.random() * 12 + 8,
+        color: color,
+        vx: (Math.random() - 0.5) * 2,
+        vy: -Math.random() * 2 - 1,
+        alpha: 1,
+        decay: Math.random() * 0.004 + 0.002,
+        rotation: Math.random() * 2 * Math.PI,
+        rotationSpeed: (Math.random() - 0.5) * 0.05,
+        heart: true
+      });
+    }
 
-// Kalpler ekleme
-function addHearts() {
-  const rect = evetBtn.getBoundingClientRect();
-  const x = rect.left + rect.width/2;
-  const y = rect.top + rect.height/2;
-  for (let i = 0; i < 5; i++) {
-    createHeart(x, y);
-  }
-}
+    // Particle güncelleme
+    function updateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (!p.heart) p.vy += 0.05; // yerçekimi sadece havai fişek
+        if (p.heart) p.rotation += p.rotationSpeed;
+        p.alpha -= p.decay;
+        if (p.alpha <= 0) particles.splice(i, 1);
+        else {
+          ctx.globalAlpha = p.alpha;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          if (p.heart) {
+            const size = p.radius;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation);
+            ctx.moveTo(0, 0);
+            ctx.arc(-size/2, 0, size/2, Math.PI, 0, false);
+            ctx.arc(size/2, 0, size/2, Math.PI, 0, false);
+            ctx.lineTo(0, size);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+          } else {
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
+            ctx.fill();
+          }
+        }
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(updateParticles);
+    }
+    updateParticles();
 
-// Buton tıklamaları
-hayirBtn.addEventListener("click", () => {
-  scale += INCREMENT;
-  evetBtn.style.transform = `scale(${scale})`;
-  const moveDistance = (scale - 1) * 40;
-  buttons.style.gap = `${20 + moveDistance}px`;
+    function startFireworks() {
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * (canvas.height / 2);
+          createFirework(x, y);
+        }, i * 400);
+      }
+    }
 
-  addHearts(); // Hayır'a basınca kalpler uçuyor
-});
+    function addHearts() {
+      const rect = evetBtn.getBoundingClientRect();
+      const x = rect.left + rect.width/2;
+      const y = rect.top + rect.height/2;
+      for (let i = 0; i < 5; i++) {
+        createHeart(x, y);
+      }
+    }
 
-evetBtn.addEventListener("click", () => {
-  startFireworks();
-  music.play();
-  setTimeout(() => alert("💛💙Seni çok seviyorum 💛💙"), 2000);
-});
+    // Hayır butonu tıklaması
+    hayirBtn.addEventListener("click", () => {
+      scale += INCREMENT;
+      evetBtn.style.transform = `scale(${scale})`;
+      const moveDistance = (scale - 1) * 40;
+      buttons.style.gap = `${20 + moveDistance}px`;
 
+      addHearts();
+
+      // Hayır sayacı
+      hayirCount++;
+      if (hayirCount === 10) {
+        alert("Evet’e bas artık! 😄");
+        hayirCount = 0;
+      }
+    });
+
+    // Evet butonu tıklaması
+    evetBtn.addEventListener("click", () => {
+      startFireworks();
+      music.play();
+      setTimeout(() => alert("Seni çok seviyorum 💚"), 2000);
+    });
   </script>
 </body>
 </html>
