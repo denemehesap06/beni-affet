@@ -43,58 +43,31 @@
   </div>
 
   <script>
-    // Basit ve açıklayıcı JavaScript (yeni başlayanlar için uygundur)
-    const evetBtn = document.getElementById('evet');
-    const hayirBtn = document.getElementById('hayir');
+  const evetBtn = document.getElementById('evet');
+  const hayirBtn = document.getElementById('hayir');
 
-    // Ölçek (1 = normal). Her 'hayir' tıklamada çarpan kadar artar.
-    let scale = 1;
-    const INCREMENT = 1.12; // her hayıra basıldığında boyut çarpanı
-    const MAX_SCALE = 5;     // kabul edilebilir en büyük boyut (aşırı büyümeyi engellemek için)
+  // Başlangıçta ölçek 1
+  let scale = 1;
+  const INCREMENT = 0.2; // her 'hayır'da yüzde 20 büyü
+  const MAX_SCALE = 5;   // aşırı büyümeyi engelle
 
-    // Fareyle veya klavyeyle erişime uygun olacak şekilde event ekliyoruz.
-    hayirBtn.addEventListener('click', () => {
-      // shake efektini tetikle
-      hayirBtn.classList.remove('shake');
-      void hayirBtn.offsetWidth; // reflow -> animation yeniden oynar
-      hayirBtn.classList.add('shake');
-
-      // evet butonunu büyüt
-      scale = Math.min(MAX_SCALE, scale * INCREMENT);
+  hayirBtn.addEventListener('click', () => {
+    // Hayıra her basıldığında evet butonunun boyutunu artır
+    if (scale < MAX_SCALE) {
+      scale += INCREMENT;
       evetBtn.style.transform = `scale(${scale})`;
-      evetBtn.setAttribute('aria-pressed', 'true');
+    }
 
-      // görsel feedback: kısa pop animasyonu
-      evetBtn.classList.remove('pop');
-      void evetBtn.offsetWidth;
-      evetBtn.classList.add('pop');
-    });
+    // Görsel olarak küçük bir titreme efekti ekleyelim
+    hayirBtn.classList.remove('shake');
+    void hayirBtn.offsetWidth; // animasyonu sıfırlar
+    hayirBtn.classList.add('shake');
+  });
 
-    // Evet'e tıklanınca küçük bir teşekkür veya reset yapabilirsiniz.
-    evetBtn.addEventListener('click', () => {
-      // örnek: eğer çok büyüdüyse küçült
-      if (scale > 1.8) {
-        scale = 1; // reset
-        evetBtn.style.transform = `scale(${scale})`;
-        alert('Seni seviyorum 💚');
-      } else {
-        alert('Seni seviyorum 💚');
-      }
-    });
+  evetBtn.addEventListener('click', () => {
+    alert('Seni seviyorum 💚');
+  });
+</script>
 
-    // Klavye erişilebilirliği: Enter veya Space ile çalışsın
-    [evetBtn, hayirBtn].forEach(btn => {
-      btn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          btn.click();
-        }
-      });
-    });
-
-    // Dokunmatik cihazlarda daha akıcı his için dokunma olayını da destekleyin
-    hayirBtn.addEventListener('touchstart', (e) => { e.preventDefault(); hayirBtn.click(); });
-
-  </script>
 </body>
 </html>
