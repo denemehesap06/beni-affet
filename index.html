@@ -73,14 +73,13 @@
 <body>
   <canvas id="fireworks"></canvas>
   <div class="container">
-    <h1>ASYAAA AFFFFETT BENİ</h1>
+    <h1>ASYAAA BENİ AFFFEEETTTTTTT</h1>
     <div class="buttons">
       <button id="evet">EVET</button>
       <button id="hayir">hayır</button>
     </div>
   </div>
 
-  <!-- Müzik -->
   <audio id="music" src="music.mp3"></audio>
 
   <script>
@@ -94,9 +93,8 @@
     let scale = 1;
     const INCREMENT = 0.2;
     let particles = [];
-    let hayirCount = 0; // Hayır sayacı
+    let hayirCount = 0;
 
-    // Canvas boyut ayarı
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -104,7 +102,6 @@
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    // Havai fişek oluşturma
     function createFirework(x, y) {
       const count = 50;
       for (let i = 0; i < count; i++) {
@@ -123,7 +120,6 @@
       }
     }
 
-    // Kalp oluşturma (sarı/lacivert)
     function createHeart(x, y) {
       const colors = ['#FFD700', '#1E3A8A'];
       const color = colors[Math.floor(Math.random() * colors.length)];
@@ -141,14 +137,26 @@
       });
     }
 
-    // Particle güncelleme
+    // Arka planda sürekli uçan kalpler
+    function createBackgroundHearts() {
+      const x = Math.random() * canvas.width;
+      const y = canvas.height + 20; // alttan başlasın
+      createHeart(x, y);
+    }
+
     function updateParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Arka plan kalplerini sürekli ekle
+      if (Math.random() < 0.05) { // yoğunluğu ayarlayabilirsin
+        createBackgroundHearts();
+      }
+
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx;
         p.y += p.vy;
-        if (!p.heart) p.vy += 0.05; // yerçekimi sadece havai fişek
+        if (!p.heart) p.vy += 0.05; // yerçekimi
         if (p.heart) p.rotation += p.rotationSpeed;
         p.alpha -= p.decay;
         if (p.alpha <= 0) particles.splice(i, 1);
@@ -198,7 +206,6 @@
       }
     }
 
-    // Hayır butonu tıklaması
     hayirBtn.addEventListener("click", () => {
       scale += INCREMENT;
       evetBtn.style.transform = `scale(${scale})`;
@@ -207,19 +214,17 @@
 
       addHearts();
 
-      // Hayır sayacı
       hayirCount++;
-      if (hayirCount === 10) {
-        alert("Evet’e bas artık! 😄");
+      if (hayirCount === 20) {
+        alert("evete bas artık amk");
         hayirCount = 0;
       }
     });
 
-    // Evet butonu tıklaması
     evetBtn.addEventListener("click", () => {
       startFireworks();
       music.play();
-      setTimeout(() => alert("Seni çok seviyorum 💚"), 2000);
+      setTimeout(() => alert("💛💙 Seni seviyorum 💛💙"), 2000);
     });
   </script>
 </body>
