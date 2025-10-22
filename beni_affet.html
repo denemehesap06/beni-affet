@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Beni Affet</title>
+  <style>
+    :root{ --bg:#0f1724; --card:#0b1320; --accent:#ff6b81; --text:#f8fafc }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:var(--text);background:linear-gradient(180deg,#08101a 0%, #091827 100%)}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{background:rgba(255,255,255,0.03);padding:36px;border-radius:16px;box-shadow:0 10px 30px rgba(2,6,23,0.6);text-align:center;max-width:520px;width:100%}
+    h1{margin:0 0 18px;font-size:40px;letter-spacing:1px}
+    p.lead{margin:0 0 24px;opacity:0.9}
+    .controls{display:flex;gap:16px;justify-content:center;align-items:center}
+    button{padding:12px 22px;border-radius:12px;border:0;font-weight:700;font-size:18px;cursor:pointer;transition:transform 220ms ease, box-shadow 220ms ease;outline:none}
+    button:active{transform:translateY(2px)}
+    #evet{background:linear-gradient(90deg,#48bb78,#34d399);color:#022;transform-origin:center;box-shadow:0 8px 20px rgba(16,185,129,0.14)}
+    #hayir{background:transparent;border:2px solid rgba(255,255,255,0.08);color:var(--text);padding:12px 20px}
+    /* small helper text */
+    .hint{margin-top:16px;font-size:13px;opacity:0.75}
+
+    /* animation classes */
+    .pop{animation:popAnim 300ms ease forwards}
+    @keyframes popAnim{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1.08)}}
+
+    .shake{animation:shakeAnim 350ms ease}
+    @keyframes shakeAnim{0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
+
+    /* responsive */
+    @media (max-width:420px){h1{font-size:30px}button{font-size:16px;padding:10px 16px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="main" aria-labelledby="title">
+      <h1 id="title">Beni affet?</h1>
+      <p class="lead">Küçük bir sürpriz — lütfen birini seç :)</p>
+
+      <div class="controls">
+        <button id="evet" aria-pressed="false" aria-label="Evet">Evet</button>
+        <button id="hayir" aria-label="Hayır">Hayır</button>
+      </div>
+
+      <div class="hint">Her "Hayır" basışında <strong>Evet</strong> düğmesi biraz büyüyecek.</div>
+    </div>
+  </div>
+
+  <script>
+    // Basit ve açıklayıcı JavaScript (yeni başlayanlar için uygundur)
+    const evetBtn = document.getElementById('evet');
+    const hayirBtn = document.getElementById('hayir');
+
+    // Ölçek (1 = normal). Her 'hayir' tıklamada çarpan kadar artar.
+    let scale = 1;
+    const INCREMENT = 1.12; // her hayıra basıldığında boyut çarpanı
+    const MAX_SCALE = 5;     // kabul edilebilir en büyük boyut (aşırı büyümeyi engellemek için)
+
+    // Fareyle veya klavyeyle erişime uygun olacak şekilde event ekliyoruz.
+    hayirBtn.addEventListener('click', () => {
+      // shake efektini tetikle
+      hayirBtn.classList.remove('shake');
+      void hayirBtn.offsetWidth; // reflow -> animation yeniden oynar
+      hayirBtn.classList.add('shake');
+
+      // evet butonunu büyüt
+      scale = Math.min(MAX_SCALE, scale * INCREMENT);
+      evetBtn.style.transform = `scale(${scale})`;
+      evetBtn.setAttribute('aria-pressed', 'true');
+
+      // görsel feedback: kısa pop animasyonu
+      evetBtn.classList.remove('pop');
+      void evetBtn.offsetWidth;
+      evetBtn.classList.add('pop');
+    });
+
+    // Evet'e tıklanınca küçük bir teşekkür veya reset yapabilirsiniz.
+    evetBtn.addEventListener('click', () => {
+      // örnek: eğer çok büyüdüyse küçült
+      if (scale > 1.8) {
+        scale = 1; // reset
+        evetBtn.style.transform = `scale(${scale})`;
+        alert('Seni seviyorum 💚');
+      } else {
+        alert('Seni seviyorum 💚');
+      }
+    });
+
+    // Klavye erişilebilirliği: Enter veya Space ile çalışsın
+    [evetBtn, hayirBtn].forEach(btn => {
+      btn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          btn.click();
+        }
+      });
+    });
+
+    // Dokunmatik cihazlarda daha akıcı his için dokunma olayını da destekleyin
+    hayirBtn.addEventListener('touchstart', (e) => { e.preventDefault(); hayirBtn.click(); });
+
+  </script>
+</body>
+</html>
