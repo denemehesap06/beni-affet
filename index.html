@@ -73,7 +73,7 @@
 <body>
   <canvas id="fireworks"></canvas>
   <div class="container">
-    <h1>ASYA BENİ AFFFETTTTTTTT</h1>
+    <h1>Beni affet?</h1>
     <div class="buttons">
       <button id="evet">Evet</button>
       <button id="hayir">Hayır</button>
@@ -103,7 +103,7 @@
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    // Havai fişek ve kalpler
+    // Havai fişek oluşturma
     function createFirework(x, y) {
       const count = 50;
       for (let i = 0; i < count; i++) {
@@ -121,6 +121,7 @@
       }
     }
 
+    // Kalp oluşturma (uçan, parıltılı)
     function createHeart(x, y) {
       particles.push({
         x, y,
@@ -129,78 +130,14 @@
         vx: (Math.random() - 0.5) * 2,
         vy: -Math.random() * 2 - 1,
         alpha: 1,
-        decay: Math.random() * 0.01 + 0.003,
+        decay: Math.random() * 0.005 + 0.002,
+        rotation: Math.random() * 2 * Math.PI,
+        rotationSpeed: (Math.random()-0.5)*0.1,
         heart: true
       });
     }
 
+    // Güncelleme
     function updateParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        if (!p.heart) p.vy += 0.05; // yerçekimi sadece havai fişekler için
-        p.alpha -= p.decay;
-        if (p.alpha <= 0) particles.splice(i, 1);
-        else {
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          if (p.heart) {
-            // basit kalp şekli (yaklaşık)
-            ctx.moveTo(p.x, p.y);
-            ctx.arc(p.x - p.radius/2, p.y, p.radius/2, Math.PI, 0, false);
-            ctx.arc(p.x + p.radius/2, p.y, p.radius/2, Math.PI, 0, false);
-            ctx.lineTo(p.x, p.y + p.radius);
-            ctx.closePath();
-            ctx.fill();
-          } else {
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
-            ctx.fill();
-          }
-        }
-      }
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(updateParticles);
-    }
-    updateParticles();
-
-    function startFireworks() {
-      for (let i=0; i<5; i++){
-        setTimeout(()=>{
-          const x = Math.random()*canvas.width;
-          const y = Math.random()*(canvas.height/2);
-          createFirework(x, y);
-        }, i*400);
-      }
-    }
-
-    function addHearts() {
-      const rect = evetBtn.getBoundingClientRect();
-      const x = rect.left + rect.width/2;
-      const y = rect.top + rect.height/2;
-      for (let i=0; i<5; i++){
-        createHeart(x, y);
-      }
-    }
-
-    // Buton tıklamaları
-    hayirBtn.addEventListener("click", () => {
-      scale += INCREMENT;
-      evetBtn.style.transform = `scale(${scale})`;
-      const moveDistance = (scale - 1)*40;
-      buttons.style.gap = `${20 + moveDistance}px`;
-
-      // kalpler ekle her büyümede
-      addHearts();
-    });
-
-    evetBtn.addEventListener("click", () => {
-      startFireworks();
-      music.play();
-      setTimeout(()=>alert("Seni çok seviyorum 💚"), 2000);
-    });
-  </script>
-</body>
-</html>
+      for (let i = particles.le
